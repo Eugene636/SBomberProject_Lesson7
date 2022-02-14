@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <fstream>
 
 namespace MyTools {
 
@@ -39,16 +40,19 @@ namespace MyTools {
     void SetColor(ConsoleColor color);
 
 	//=============================================================================================
+    class FileLogger {
+    void __fastcall OpenLogFile(const std::string& FN);
+    std::ofstream logOut;
+    void CloseLogFile();
+ public:
+    void __fastcall WriteToLog(const std::string& str);
 
-	void __fastcall OpenLogFile(const std::string& FN);
+    void __fastcall WriteToLog(const std::string& str, int n);
 
-	void CloseLogFile();
-
-	void __fastcall WriteToLog(const std::string& str);
-
-	void __fastcall WriteToLog(const std::string& str, int n);
-
-	void __fastcall WriteToLog(const std::string& str, double d);
+    void __fastcall WriteToLog(const std::string& str, double d);
+    FileLogger();
+    ~FileLogger();
+    };
 
 	//=============================================================================================
 
