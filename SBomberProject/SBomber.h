@@ -26,7 +26,7 @@ public:
     void CheckObjects();
 
 private:
-
+    void insertDestroyableObject();
     void CheckPlaneAndLevelGUI();
     void CheckBombsAndGround();
     void __fastcall CheckDestoyableObjects(Bomb* pBomb);

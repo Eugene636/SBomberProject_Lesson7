@@ -1,6 +1,8 @@
 
 #include <conio.h>
 #include <windows.h>
+#include <random>
+#include <iostream>
 
 #include "MyTools.h"
 #include "SBomber.h"
@@ -298,7 +300,9 @@ void SBomber::ProcessKBHit()
     case 'B':
         DropBomb();
         break;
-
+    case 'd':
+        insertDestroyableObject();
+        break;
     default:
         break;
     }
@@ -364,5 +368,43 @@ void SBomber::DropBomb()
         vecDynamicObj.push_back(pBomb);
         bombsNumber--;
         score -= Bomb::BombCost;
+    }
+}
+
+void SBomber::insertDestroyableObject() {
+    vector<DestroyableGroundObject*> vecDestoyableObjects = FindDestoyableGroundObjects();
+    srand(time(nullptr));
+    int num_cloning_object = rand() % vecDestoyableObjects.size();
+    double x1 = 8;
+    Plane* pPlane = FindPlane();
+    x1 = pPlane->GetX();
+    bool busy = false;
+    double pos;
+    double XMax = GetMaxX();
+    pos = (rand() % ((int)XMax - (int)x1)) + x1;
+    for (int i = 0; i < 5; i++) {
+        for (auto des : vecDestoyableObjects) {
+            if (des->isInside(pos - 7, pos +7)) {
+                busy = true;
+                break;
+            }
+        }
+        if (busy) {
+            pos += 13;
+            if (pos < XMax) continue;
+            else {
+                pos -= 26;
+                if (pos > x1) continue;
+                else break;
+            }
+
+        }
+        if (!busy) {
+            DestroyableGroundObject* object = vecDestoyableObjects[num_cloning_object]->clone();
+            double y = object->GetY();
+            object->SetPos(pos - 7, y);
+            vecStaticObj.push_back(object);
+            break;
+        }
     }
 }

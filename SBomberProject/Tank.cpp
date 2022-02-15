@@ -42,3 +42,12 @@ void Tank::Draw() const
 	GotoXY(x,y);
 	cout << " ###########";
 }
+Tank::Tank() = default;
+Tank::Tank(const Tank& other_tank) {
+	x = other_tank.x;
+	y = other_tank.y;
+	width = other_tank.width;
+}
+Tank* Tank::clone() const {
+	return new Tank(*this);
+}
