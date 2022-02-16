@@ -24,9 +24,9 @@ public:
     void DrawFrame();
     void MoveObjects();
     void CheckObjects();
-
+    void AnimateScrolling();
 private:
-
+    void insertDestroyableObject();
     void CheckPlaneAndLevelGUI();
     void CheckBombsAndGround();
     void __fastcall CheckDestoyableObjects(Bomb* pBomb);

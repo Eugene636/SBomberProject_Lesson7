@@ -46,3 +46,13 @@ void House::Draw() const
 	GotoXY(x, y);
 	cout << "############";
 }
+House::House() = default;
+House::House(const House& other_house) {
+	x = other_house.x;
+	y = other_house.y;
+	width = other_house.width;
+}
+
+House* House::clone() const {
+	return new House(*this);
+}

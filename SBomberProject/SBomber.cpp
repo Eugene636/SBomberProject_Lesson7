@@ -1,6 +1,8 @@
 
 #include <conio.h>
 #include <windows.h>
+#include <random>
+#include <iostream>
 
 #include "MyTools.h"
 #include "SBomber.h"
@@ -298,7 +300,9 @@ void SBomber::ProcessKBHit()
     case 'B':
         DropBomb();
         break;
-
+    case 'd':
+        insertDestroyableObject();
+        break;
     default:
         break;
     }
@@ -365,4 +369,102 @@ void SBomber::DropBomb()
         bombsNumber--;
         score -= Bomb::BombCost;
     }
+}
+
+void SBomber::insertDestroyableObject() {
+    vector<DestroyableGroundObject*> vecDestoyableObjects = FindDestoyableGroundObjects();
+    srand(time(nullptr));
+    int num_cloning_object = rand() % vecDestoyableObjects.size();
+    double x1 = 8;
+    Plane* pPlane = FindPlane();
+    x1 = pPlane->GetX();
+    bool busy = false;
+    double pos;
+    double XMax = GetMaxX();
+    pos = (rand() % ((int)XMax - (int)x1)) + x1;
+    for (int i = 0; i < 5; i++) {
+        for (auto des : vecDestoyableObjects) {
+            if (des->isInside(pos - 7, pos +7)) {
+                busy = true;
+                break;
+            }
+        }
+        if (busy) {
+            pos += 13*(i + 1);
+            if (pos < XMax) continue;
+            else {
+                pos -= 13*(i + 2);
+                if (pos > x1) continue;
+                else break;
+            }
+
+        }
+        if (!busy) {
+            DestroyableGroundObject* object = vecDestoyableObjects[num_cloning_object]->clone();
+            double y = object->GetY();
+            object->SetPos(pos - 7, y);
+            vecStaticObj.push_back(object);
+            break;
+        }
+    }
+}
+
+void SBomber::AnimateScrolling() {
+    static const size_t ScrollHeight = 30;
+    static const size_t ScrollWidth = 30;
+    static const char* ppScroll[ScrollHeight] =
+    { "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "  Project manager:        	",
+    " 	 Ivan Vasilevich      	",
+    "                          	",
+    "  Developers:             	",
+    " 	 Nikolay Gavrilov     	",
+    " 	 Dmitriy Sidelnikov   	",
+    " 	 Eva Brown            	",
+    "                          	",
+    "  Designers:              	",
+    " 	 Anna Pachenkova      	",
+    " 	 Elena Shvaiber       	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	" };
+    WriteToLog(string(__FUNCTION__) + " was invoked");
+    const size_t windowHeight = 10; // Размер окна для скроллинга
+    const size_t startX = MyTools::GetMaxX() / 2 - ScrollWidth / 2;
+    const size_t startY = MyTools::GetMaxY() / 2 - windowHeight / 2;
+    double curPos = 0;
+    int count_time = 0;
+    int count_string = 0;
+    do {
+        TimeStart();
+        MyTools::ClrScr();
+        MyTools::GotoXY(0, 0);
+        // вывод windowHeight строк из ppScroll используя смещение curPos 
+ //       GotoXY(startX, startY);
+        count_time = (int)curPos;
+        for (count_string = count_time; count_string < (count_time + windowHeight); count_string++) {
+            GotoXY(startX, startY + count_string - count_time);
+            cout << ppScroll[count_string] << endl;
+        }
+
+        TimeFinish();
+        curPos += deltaTime * 0.0015;
+
+    } while (!_kbhit() && int(curPos) <= (ScrollHeight - windowHeight));
+    MyTools::ClrScr();
 }
