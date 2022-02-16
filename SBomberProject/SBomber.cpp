@@ -390,10 +390,10 @@ void SBomber::insertDestroyableObject() {
             }
         }
         if (busy) {
-            pos += 13;
+            pos += 13*(i + 1);
             if (pos < XMax) continue;
             else {
-                pos -= 26;
+                pos -= 13*(i + 2);
                 if (pos > x1) continue;
                 else break;
             }
@@ -407,4 +407,64 @@ void SBomber::insertDestroyableObject() {
             break;
         }
     }
+}
+
+void SBomber::AnimateScrolling() {
+    static const size_t ScrollHeight = 30;
+    static const size_t ScrollWidth = 30;
+    static const char* ppScroll[ScrollHeight] =
+    { "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "  Project manager:        	",
+    " 	 Ivan Vasilevich      	",
+    "                          	",
+    "  Developers:             	",
+    " 	 Nikolay Gavrilov     	",
+    " 	 Dmitriy Sidelnikov   	",
+    " 	 Eva Brown            	",
+    "                          	",
+    "  Designers:              	",
+    " 	 Anna Pachenkova      	",
+    " 	 Elena Shvaiber       	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	",
+    "                          	" };
+    WriteToLog(string(__FUNCTION__) + " was invoked");
+    const size_t windowHeight = 10; // Размер окна для скроллинга
+    const size_t startX = MyTools::GetMaxX() / 2 - ScrollWidth / 2;
+    const size_t startY = MyTools::GetMaxY() / 2 - windowHeight / 2;
+    double curPos = 0;
+    int count_time = 0;
+    int count_string = 0;
+    do {
+        TimeStart();
+        MyTools::ClrScr();
+        MyTools::GotoXY(0, 0);
+        // вывод windowHeight строк из ppScroll используя смещение curPos 
+ //       GotoXY(startX, startY);
+        count_time = (int)curPos;
+        for (count_string = count_time; count_string < (count_time + windowHeight); count_string++) {
+            GotoXY(startX, startY + count_string - count_time);
+            cout << ppScroll[count_string] << endl;
+        }
+
+        TimeFinish();
+        curPos += deltaTime * 0.0015;
+
+    } while (!_kbhit() && int(curPos) <= (ScrollHeight - windowHeight));
+    MyTools::ClrScr();
 }
